@@ -1,8 +1,11 @@
 package com.fawryEx.storyEx.controller;
 
+import com.fawryEx.storyEx.Exception.base.BaseResponse;
 import com.fawryEx.storyEx.entity.Stock;
 import com.fawryEx.storyEx.service.StockService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +18,23 @@ public class StockController {
     private StockService stockService;
 
     @PostMapping("/add")
-    public Stock addStock(@RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
-        return stockService.addStock(storeId, productId, quantity);
+    public ResponseEntity<BaseResponse<Stock>> addStock(@Valid @RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
+        BaseResponse<Stock> baseResponse = new BaseResponse<>();
+        baseResponse.setData(stockService.addStock(storeId, productId, quantity));
+        return ResponseEntity.ok(baseResponse);
+//        return stockService.addStock(storeId, productId, quantity);
     }
 
     @PostMapping("/consume")
-    public Stock consumeStock(@RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
-        return stockService.consumeStock(storeId, productId, quantity);
+    public ResponseEntity<BaseResponse<Stock>> consumeStock(@Valid @RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
+        BaseResponse<Stock> baseResponse = new BaseResponse<>();
+        baseResponse.setData(stockService.addStock(storeId, productId, quantity));
+        return ResponseEntity.ok(baseResponse);
+//        return stockService.consumeStock(storeId, productId, quantity);
     }
 
     @PostMapping("/check")
     public String checkStock(@RequestBody List<StockRequest> stockRequests) {
-        // تحويل قائمة من StockRequest إلى قائمة من storeId و productId
         List<Long> storeIds = stockRequests.stream().map(StockRequest::getStoreId).distinct().toList();
         List<Long> productIds = stockRequests.stream().map(StockRequest::getProductId).distinct().toList();
         return stockService.checkStock(storeIds, productIds);

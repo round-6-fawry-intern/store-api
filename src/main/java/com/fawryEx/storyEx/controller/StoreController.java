@@ -1,10 +1,14 @@
 package com.fawryEx.storyEx.controller;
 
 
+import com.fawryEx.storyEx.Exception.base.BaseResponse;
 import com.fawryEx.storyEx.entity.Product;
 import com.fawryEx.storyEx.entity.Store;
+import com.fawryEx.storyEx.service.ProductServiceClient;
 import com.fawryEx.storyEx.service.StoreService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,23 +20,21 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
+    private ProductServiceClient productServiceClient;
+
     @PostMapping
-    public Store createStore(@RequestBody Store store) {
-        return storeService.createStore(store);
+    public ResponseEntity<BaseResponse<Store>> createStore(@Valid @RequestBody Store store) {
+        BaseResponse<Store> baseResponse = new BaseResponse<>();
+        baseResponse.setData(storeService.createStore(store));
+        return ResponseEntity.ok(baseResponse);
     }
 
     @GetMapping("/products")
-    public List<Product> getProducts() {
-        return storeService.getProducts();
-    }
+    public ResponseEntity<BaseResponse<List<Product>>> getProducts() {
 
-//    @PostMapping("/{storeId}/stock")
-//    public void addStock(@PathVariable Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
-//        storeService.addStock(storeId, productId, quantity);
-//    }
-//
-//    @PostMapping("/{storeId}/consume")
-//    public void consumeProduct(@PathVariable Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
-//        storeService.consumeProduct(storeId, productId, quantity);
-//    }
+        BaseResponse<List<Product>> baseResponse = new BaseResponse<>();
+        baseResponse.setData(productServiceClient.getAllProducts());
+        return ResponseEntity.ok(baseResponse);
+
+    }
 }
