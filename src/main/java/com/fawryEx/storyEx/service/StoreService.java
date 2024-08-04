@@ -36,4 +36,11 @@ public class StoreService {
         return productRepository.findAll();
     }
 
+    public Store getStoreById(Long id) {
+        return storeRepository.findById(id).get();
+    }
+
+    public void deleteStore(Long id) {
+        storeRepository.deleteById(id);
+    }
 }

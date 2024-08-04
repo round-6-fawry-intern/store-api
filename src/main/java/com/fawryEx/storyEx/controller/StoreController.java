@@ -29,6 +29,19 @@ public class StoreController {
         return ResponseEntity.ok(baseResponse);
     }
 
+    @GetMapping
+    public ResponseEntity<BaseResponse<Store>> getStoreById(@Valid @RequestBody Long id) {
+        BaseResponse<Store> baseResponse = new BaseResponse<>();
+        baseResponse.setData(storeService.getStoreById(id));
+        return ResponseEntity.ok(baseResponse);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Void>> deleteStore(@Valid @RequestBody Long id) {
+        BaseResponse<Void> baseResponse = new BaseResponse<>();
+        return ResponseEntity.ok(baseResponse);
+    }
+
     @GetMapping("/products")
     public ResponseEntity<BaseResponse<List<Product>>> getProducts() {
 
