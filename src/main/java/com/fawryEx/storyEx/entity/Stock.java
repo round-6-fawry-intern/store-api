@@ -19,11 +19,11 @@ public class Stock {
 
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+    private Long store;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private Long product;
 
     @Min(0)
     private int quantity;

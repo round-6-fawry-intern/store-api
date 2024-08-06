@@ -1,19 +1,5 @@
 package com.fawryEx.storyEx.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import com.fawryEx.storyEx.entity.Product;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
-import java.util.List;
-
 public class ProductServiceTest {
 
 //    @Mock

@@ -1,6 +1,5 @@
 package com.fawryEx.storyEx.service;
 
-import com.fawryEx.storyEx.entity.Product;
 import com.fawryEx.storyEx.entity.Store;
 import com.fawryEx.storyEx.repository.ProductRepository;
 import com.fawryEx.storyEx.repository.StockHistoryRepository;
@@ -32,9 +31,9 @@ public class StoreService {
     }
 
 
-    public List<Product> getProducts() {
-        return productRepository.findAll();
-    }
+//    public List<Product> getProducts() {
+//        return productRepository.findAll();
+//    }
 
     public Store getStoreById(Long id) {
         return storeRepository.findById(id).get();

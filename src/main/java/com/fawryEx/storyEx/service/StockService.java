@@ -4,7 +4,6 @@ import com.fawryEx.storyEx.Exception.exceptiones.InsufficientStockException;
 import com.fawryEx.storyEx.Exception.exceptiones.StoreNotFoundException;
 import com.fawryEx.storyEx.entity.Stock;
 import com.fawryEx.storyEx.entity.StockHistory;
-import com.fawryEx.storyEx.repository.ProductRepository;
 import com.fawryEx.storyEx.repository.StockHistoryRepository;
 import com.fawryEx.storyEx.repository.StockRepository;
 import com.fawryEx.storyEx.repository.StoreRepository;
@@ -27,8 +26,8 @@ public class StockService {
     @Autowired
     private StockHistoryRepository stockHistoryRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+//    @Autowired
+//    private ProductRepository productRepository;
 
     @Autowired
     private StoreRepository storeRepository;
@@ -36,8 +35,8 @@ public class StockService {
     public Stock addStock(Long storeId, Long productId, int quantity) {
         logger.info("Adding stock: Store ID = {}, Product ID = {}, Quantity = {}", storeId, productId, quantity);
         Stock stock = new Stock();
-        stock.setStore(storeRepository.findById(storeId).orElse(null));
-        stock.setProduct(productRepository.findById(productId).orElse(null));
+        stock.setStore(storeId);
+        stock.setProduct(productId);
         stock.setQuantity(quantity);
         stock.setTimestamp(LocalDateTime.now());
         stock.setType("add");
@@ -47,8 +46,8 @@ public class StockService {
 
 
         StockHistory stockHistory = new StockHistory();
-        stockHistory.setStore(savedStock.getStore());
-        stockHistory.setProduct(savedStock.getProduct());
+        stockHistory.setStore(storeRepository.findById(storeId).get());
+        stockHistory.setProduct(productId);
         stockHistory.setQuantity(quantity);
         stockHistory.setTimestamp(LocalDateTime.now());
         stockHistory.setType("add");
@@ -75,7 +74,7 @@ public class StockService {
         logger.info("Stock consumed successfully: {}", updatedStock);
 
         StockHistory stockHistory = new StockHistory();
-        stockHistory.setStore(updatedStock.getStore());
+        stockHistory.setStore(storeRepository.findById(storeId).get());
         stockHistory.setProduct(updatedStock.getProduct());
         stockHistory.setQuantity(quantity);
         stockHistory.setTimestamp(LocalDateTime.now());
@@ -97,5 +96,6 @@ public class StockService {
              return "Stock found";
          }
     }
+
 }
 

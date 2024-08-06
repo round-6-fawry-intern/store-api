@@ -21,7 +21,7 @@ public class StockHistory {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private Long product;
 
     private int quantity;
     private LocalDateTime timestamp;
