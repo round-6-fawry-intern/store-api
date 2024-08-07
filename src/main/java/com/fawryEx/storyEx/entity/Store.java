@@ -22,7 +22,7 @@ public class Store {
 
     @NotBlank
     private String name;
-
+    private String location;
     private String cardNumber;
 
     @Email

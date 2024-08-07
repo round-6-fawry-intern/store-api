@@ -16,14 +16,8 @@ public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Long store;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Long product;
+    private Long storeId;
+    private Long productId;
 
     @Min(0)
     private int quantity;

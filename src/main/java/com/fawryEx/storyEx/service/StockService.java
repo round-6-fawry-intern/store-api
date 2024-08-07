@@ -2,9 +2,8 @@ package com.fawryEx.storyEx.service;
 
 import com.fawryEx.storyEx.Exception.exceptiones.InsufficientStockException;
 import com.fawryEx.storyEx.Exception.exceptiones.StoreNotFoundException;
+import com.fawryEx.storyEx.entity.Product;
 import com.fawryEx.storyEx.entity.Stock;
-import com.fawryEx.storyEx.entity.StockHistory;
-import com.fawryEx.storyEx.repository.StockHistoryRepository;
 import com.fawryEx.storyEx.repository.StockRepository;
 import com.fawryEx.storyEx.repository.StoreRepository;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +24,10 @@ public class StockService {
     private StockRepository stockRepository;
 
     @Autowired
-    private StockHistoryRepository stockHistoryRepository;
+    private ProductServiceClient productServiceClient;
+
+//    @Autowired
+//    private StockHistoryRepository stockHistoryRepository;
 
 //    @Autowired
 //    private ProductRepository productRepository;
@@ -35,24 +38,14 @@ public class StockService {
     public Stock addStock(Long storeId, Long productId, int quantity) {
         logger.info("Adding stock: Store ID = {}, Product ID = {}, Quantity = {}", storeId, productId, quantity);
         Stock stock = new Stock();
-        stock.setStore(storeId);
-        stock.setProduct(productId);
+        stock.setStoreId(storeId);
+        stock.setProductId(productId);
         stock.setQuantity(quantity);
         stock.setTimestamp(LocalDateTime.now());
         stock.setType("add");
 
         Stock savedStock = stockRepository.save(stock);
         logger.info("Stock added successfully: {}", savedStock);
-
-
-        StockHistory stockHistory = new StockHistory();
-        stockHistory.setStore(storeRepository.findById(storeId).get());
-        stockHistory.setProduct(productId);
-        stockHistory.setQuantity(quantity);
-        stockHistory.setTimestamp(LocalDateTime.now());
-        stockHistory.setType("add");
-        stockHistoryRepository.save(stockHistory);
-        logger.info("Stock history created successfully: {}", stockHistory);
         return savedStock;
     }
 
@@ -60,7 +53,7 @@ public class StockService {
         logger.info("Consuming stock: Store ID = {}, Product ID = {}, Quantity = {}", storeId, productId, quantity);
         Stock stock = stockRepository.findByStoreIdAndProductId(storeId, productId)
                 .orElseThrow(() -> new StoreNotFoundException("Stock not found"));
-//        logger.error("Stock not found for Store ID = {}, Product ID = {}", storeId, productId);
+        logger.error("Stock not found for Store ID = {}, Product ID = {}", storeId, productId);
 
         if (stock.getQuantity() < quantity) {
             logger.error("Insufficient stock: Store ID = {}, Product ID = {}, Available Quantity = {}, Requested Quantity = {}", storeId, productId, stock.getQuantity(), quantity);
@@ -73,15 +66,16 @@ public class StockService {
         Stock updatedStock = stockRepository.save(stock);
         logger.info("Stock consumed successfully: {}", updatedStock);
 
-        StockHistory stockHistory = new StockHistory();
-        stockHistory.setStore(storeRepository.findById(storeId).get());
-        stockHistory.setProduct(updatedStock.getProduct());
-        stockHistory.setQuantity(quantity);
-        stockHistory.setTimestamp(LocalDateTime.now());
-        stockHistory.setType("consume");
-        stockHistoryRepository.save(stockHistory);
-        logger.info("Stock history created successfully: {}", stockHistory);
+//        StockHistory stockHistory = new StockHistory();
+//        stockHistory.setStore(storeRepository.findById(storeId).get());
+//        stockHistory.setProduct(updatedStock.getProduct());
+//        stockHistory.setQuantity(quantity);
+//        stockHistory.setTimestamp(LocalDateTime.now());
+//        stockHistory.setType("consume");
+//        stockHistoryRepository.save(stockHistory);
+//        logger.info("Stock history created successfully: {}", stockHistory);
 
+//        return updatedStock;
         return updatedStock;
     }
 
@@ -96,6 +90,40 @@ public class StockService {
              return "Stock found";
          }
     }
+
+    public Stock addStock(Stock stock) {
+        // Check if product exists
+        Product product = productServiceClient.getProduct(stock.getProductId());
+        if (product == null) {
+            throw new RuntimeException("Product not found");
+        }
+        return stockRepository.save(stock);
+    }
+
+    public List<Stock> getStockByStore(Long storeId) {
+        return stockRepository.findByStoreId(storeId);
+    }
+
+    public List<Stock> getStockByProduct(Long productId) {
+        return stockRepository.findByProductId(productId);
+    }
+
+    public void consumeProduct(Long productId, Long storeId, int quantity, LocalDate date) {
+        // Fetch existing stock
+        List<Stock> stocks = stockRepository.findByStoreId(storeId);
+        for (Stock stock : stocks) {
+            if (stock.getProductId().equals(productId) && stock.getTimestamp().equals(date)) {
+                if (stock.getQuantity() < quantity) {
+                    throw new RuntimeException("Not enough stock available");
+                }
+                stock.setQuantity(stock.getQuantity() - quantity);
+                stockRepository.save(stock);
+                return;
+            }
+        }
+        throw new RuntimeException("Stock not found for the given product and date");
+    }
+
 
 }
 

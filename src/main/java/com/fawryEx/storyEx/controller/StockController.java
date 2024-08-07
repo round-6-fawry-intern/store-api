@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,17 +19,38 @@ public class StockController {
     private StockService stockService;
 
     @PostMapping("/add")
-    public ResponseEntity<BaseResponse<Stock>> addStock(@Valid @RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
+    public ResponseEntity<BaseResponse<Stock>> addStock(@RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
         BaseResponse<Stock> baseResponse = new BaseResponse<>();
         baseResponse.setData(stockService.addStock(storeId, productId, quantity));
         return ResponseEntity.ok(baseResponse);
 //        return stockService.addStock(storeId, productId, quantity);
     }
 
+    @PostMapping
+    public Stock addStock(@RequestBody Stock stock) {
+        return stockService.addStock(stock);
+    }
+
+    @GetMapping("/store/{storeId}")
+    public List<Stock> getStockByStore(@PathVariable Long storeId) {
+        return stockService.getStockByStore(storeId);
+    }
+
+    @GetMapping("/product/{productId}")
+    public List<Stock> getStockByProduct(@PathVariable Long productId) {
+        return stockService.getStockByProduct(productId);
+    }
+
+    @PostMapping("/consumeDate")
+    public void consumeProduct(@RequestParam Long productId, @RequestParam Long storeId, @RequestParam int quantity, @RequestParam String date) {
+        LocalDate consumptionDate = LocalDate.parse(date);
+        stockService.consumeProduct(productId, storeId, quantity, consumptionDate);
+    }
+
     @PostMapping("/consume")
     public ResponseEntity<BaseResponse<Stock>> consumeStock(@Valid @RequestParam Long storeId, @RequestParam Long productId, @RequestParam int quantity) {
         BaseResponse<Stock> baseResponse = new BaseResponse<>();
-        baseResponse.setData(stockService.addStock(storeId, productId, quantity));
+        baseResponse.setData(stockService.consumeStock(storeId, productId, quantity));
         return ResponseEntity.ok(baseResponse);
 //        return stockService.consumeStock(storeId, productId, quantity);
     }
