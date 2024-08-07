@@ -17,6 +17,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 //    List<Stock> findByStoreIdInAndProductIdIn(List<Long> storeIds, List<Long> productIds);
     @Query("SELECT s FROM Stock s WHERE s.storeId IN :storeIds AND s.productId IN :productIds")
     List<Stock> findByStoreIdInAndProductIdIn(@Param("storeIds") List<Long> storeIds, @Param("productIds") List<Long> productIds);
+
     List<Stock> findByStoreId(Long storeId);
     List<Stock> findByProductId(Long productId);
 }

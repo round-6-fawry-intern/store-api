@@ -37,12 +37,13 @@ public class StockService {
 
     public Stock addStock(Long storeId, Long productId, int quantity) {
         logger.info("Adding stock: Store ID = {}, Product ID = {}, Quantity = {}", storeId, productId, quantity);
+        validateStoreAndProduct(storeId, productId);
         Stock stock = new Stock();
         stock.setStoreId(storeId);
         stock.setProductId(productId);
         stock.setQuantity(quantity);
         stock.setTimestamp(LocalDateTime.now());
-        stock.setType("add");
+        stock.setType(Stock.StockType.ADD);
 
         Stock savedStock = stockRepository.save(stock);
         logger.info("Stock added successfully: {}", savedStock);
@@ -51,10 +52,15 @@ public class StockService {
 
     public Stock consumeStock(Long storeId, Long productId, int quantity) {
         logger.info("Consuming stock: Store ID = {}, Product ID = {}, Quantity = {}", storeId, productId, quantity);
-        Stock stock = stockRepository.findByStoreIdAndProductId(storeId, productId)
-                .orElseThrow(() -> new StoreNotFoundException("Stock not found"));
-        logger.error("Stock not found for Store ID = {}, Product ID = {}", storeId, productId);
+//        Stock stock = stockRepository.findByStoreIdAndProductId(storeId, productId)
+//                .orElseThrow(() -> new StoreNotFoundException("Stock not found"));
+//        logger.error("Stock not found for Store ID = {}, Product ID = {}", storeId, productId);
 
+        Stock stock = stockRepository.findByStoreIdAndProductId(storeId, productId)
+                .orElseThrow(() -> {
+                    logger.error("Stock not found for Store ID = {}, Product ID = {}", storeId, productId);
+                    return new StoreNotFoundException("Stock not found");
+                });
         if (stock.getQuantity() < quantity) {
             logger.error("Insufficient stock: Store ID = {}, Product ID = {}, Available Quantity = {}, Requested Quantity = {}", storeId, productId, stock.getQuantity(), quantity);
             throw new InsufficientStockException("Insufficient stock");
@@ -62,7 +68,7 @@ public class StockService {
 
         stock.setQuantity(stock.getQuantity() - quantity);
         stock.setTimestamp(LocalDateTime.now());
-        stock.setType("consume");
+        stock.setType(Stock.StockType.CONSUME);
         Stock updatedStock = stockRepository.save(stock);
         logger.info("Stock consumed successfully: {}", updatedStock);
 
@@ -111,8 +117,11 @@ public class StockService {
     public void consumeProduct(Long productId, Long storeId, int quantity, LocalDate date) {
         // Fetch existing stock
         List<Stock> stocks = stockRepository.findByStoreId(storeId);
+        if (stocks.isEmpty()) {
+            throw new RuntimeException("Stock not found for the given product and date");
+        }
         for (Stock stock : stocks) {
-            if (stock.getProductId().equals(productId) && stock.getTimestamp().equals(date)) {
+            if (stock.getProductId().equals(productId) && (stock.getTimestamp() == null || stock.getTimestamp().toLocalDate().equals(date))) {
                 if (stock.getQuantity() < quantity) {
                     throw new RuntimeException("Not enough stock available");
                 }
@@ -124,6 +133,14 @@ public class StockService {
         throw new RuntimeException("Stock not found for the given product and date");
     }
 
+    private void validateStoreAndProduct(Long storeId, Long productId) {
+        if (!storeRepository.existsById(storeId)) {
+            throw new RuntimeException("Store not found");
+        }
+        if (productServiceClient.getProduct(productId) == null) {
+            throw new RuntimeException("Product not found");
+        }
+    }
 
 }
 

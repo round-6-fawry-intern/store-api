@@ -29,7 +29,7 @@ public class StoreController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteStore(@RequestBody Long id) {
+    public ResponseEntity<BaseResponse<Void>> deleteStore(@PathVariable Long id) {
         BaseResponse<Void> baseResponse = new BaseResponse<>();
         return ResponseEntity.ok(baseResponse);
     }
@@ -43,14 +43,18 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<StoreDTO>> getStoreById(@RequestBody Long id) {
+    public ResponseEntity<BaseResponse<StoreDTO>> getStoreById(@PathVariable Long id) {
         BaseResponse<StoreDTO> baseResponse = new BaseResponse<>();
         baseResponse.setData(storeService.getStoreById(id));
         return ResponseEntity.ok(baseResponse);
     }
 
     @GetMapping("/products/search")
-    public List<Product> searchProducts(@RequestParam String name) {
-        return storeService.searchProducts(name);
+    public ResponseEntity<BaseResponse<List<Product>>> searchProducts(@RequestParam String name) {
+        List<Product> products = storeService.searchProducts(name);
+        BaseResponse<List<Product>> baseResponse = new BaseResponse<>();
+        baseResponse.setData(products);
+        return ResponseEntity.ok(baseResponse);
+//        return storeService.searchProducts(name);
     }
 }

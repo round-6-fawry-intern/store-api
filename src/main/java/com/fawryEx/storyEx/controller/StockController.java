@@ -56,10 +56,16 @@ public class StockController {
     }
 
     @PostMapping("/check")
-    public String checkStock(@RequestBody List<StockRequest> stockRequests) {
+    public ResponseEntity<BaseResponse<String>> checkStock(@RequestBody List<StockRequest> stockRequests) {
         List<Long> storeIds = stockRequests.stream().map(StockRequest::getStoreId).distinct().toList();
         List<Long> productIds = stockRequests.stream().map(StockRequest::getProductId).distinct().toList();
-        return stockService.checkStock(storeIds, productIds);
+        String result = stockService.checkStock(storeIds, productIds);
+        BaseResponse<String> baseResponse = new BaseResponse<>();
+        baseResponse.setData(result);
+        return ResponseEntity.ok(baseResponse);
+//        List<Long> storeIds = stockRequests.stream().map(StockRequest::getStoreId).distinct().toList();
+//        List<Long> productIds = stockRequests.stream().map(StockRequest::getProductId).distinct().toList();
+//        return stockService.checkStock(storeIds, productIds);
     }
 
     public static class StockRequest {
