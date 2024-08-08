@@ -16,11 +16,13 @@ public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long storeId;
     private Long productId;
 
     @Min(0)
     private int quantity;
+
     private LocalDateTime timestamp;
     private String type;
 

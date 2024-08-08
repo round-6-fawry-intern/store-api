@@ -11,12 +11,23 @@ import java.util.Optional;
 
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
-//    Optional<Stock> findByStoreIdAndProductId(Long storeId, Long productId);
-    @Query("SELECT s FROM Stock s WHERE s.storeId = :storeId AND s.productId = :productId")
-    Optional<Stock> findByStoreIdAndProductId(@Param("storeId") Long storeId, @Param("productId") Long productId);
-//    List<Stock> findByStoreIdInAndProductIdIn(List<Long> storeIds, List<Long> productIds);
-    @Query("SELECT s FROM Stock s WHERE s.storeId IN :storeIds AND s.productId IN :productIds")
-    List<Stock> findByStoreIdInAndProductIdIn(@Param("storeIds") List<Long> storeIds, @Param("productIds") List<Long> productIds);
-    List<Stock> findByStoreId(Long storeId);
-    List<Stock> findByProductId(Long productId);
+  //    Optional<Stock> findByStoreIdAndProductId(Long storeId, Long productId);
+
+
+
+  @Query("SELECT s FROM Stock s WHERE s.storeId = :storeId AND s.productId = :productId")
+  Optional<Stock> findByStoreIdAndProductId(
+      @Param("storeId") Long storeId, @Param("productId") Long productId);
+
+
+
+
+  //    List<Stock> findByStoreIdInAndProductIdIn(List<Long> storeIds, List<Long> productIds);
+  @Query("SELECT s FROM Stock s WHERE s.storeId IN :storeIds AND s.productId IN :productIds")
+  List<Stock> findByStoreIdInAndProductIdIn(
+      @Param("storeIds") List<Long> storeIds, @Param("productIds") List<Long> productIds);
+
+  List<Stock> findByStoreId(Long storeId);
+
+  List<Stock> findByProductId(Long productId);
 }
