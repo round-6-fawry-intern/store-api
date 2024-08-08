@@ -43,7 +43,11 @@ public class StoreService {
                 .orElseThrow(() -> new StoreNotFoundException("Store not found"));
     }
 
+    @Transactional
     public void deleteStore(Long id) {
+        if (!storeRepository.existsById(id)) {
+            throw new StoreNotFoundException("the id = " + id + " not found");
+        }
         storeRepository.deleteById(id);
     }
 
