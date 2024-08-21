@@ -101,7 +101,7 @@ public class StockService {
 
     for (StockRequestModel stockRequestModel : stockRequests) {
 
-      System.out.println(stockRequests.getFirst().toString());
+      //System.out.println(stockRequests.getFirst().toString());
       Stock optionalStock =
           stockRepository
               .findByStoreIdAndProductId(

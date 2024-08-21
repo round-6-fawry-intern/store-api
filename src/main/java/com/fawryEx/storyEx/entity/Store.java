@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,18 +20,12 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name cannot be blank")
-    @Size(max = 100, message = "Name cannot be longer than 100 characters")
+    @NotBlank
     private String name;
-
-    @Size(max = 255, message = "Location cannot be longer than 255 characters")
     private String location;
-
-    @Size(max = 20, message = "Card number cannot be longer than 20 characters")
     private String cardNumber;
 
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email cannot be blank")
+    @Email
     private String email;
 
 }
